@@ -2,6 +2,7 @@
 
 using Java.Lang;
 using Android.Runtime;
+using Object = Java.Lang.Object;
 
 namespace Android.Animation
 {
