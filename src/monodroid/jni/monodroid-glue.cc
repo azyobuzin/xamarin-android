@@ -1168,10 +1168,14 @@ MonodroidRuntime::propagate_uncaught_exception (
 {
 	MonoClass *runtime;
 #if defined (NET6)
+	log_warn (LOG_DEFAULT, "!!! propagate_uncaught_exception (NET6)");
 	runtime = get_android_runtime_class ();
 #else
+	log_warn (LOG_DEFAULT, "!!! propagate_uncaught_exception (Legacy)");
+	log_warn (LOG_DEFAULT, "!!! propagate_uncaught_exception domain = %p", domain);
 	runtime = get_android_runtime_class (domain);
 #endif
+	log_warn (LOG_DEFAULT, "!!! get_android_runtime_class OK");
 	MonoMethod *method = mono_class_get_method_from_name (runtime, "PropagateUncaughtException", 3);
 
 	void* args[] = {
@@ -2406,6 +2410,12 @@ JNICALL Java_mono_android_Runtime_propagateUncaughtException (JNIEnv *env, [[may
 	monodroidRuntime.propagate_uncaught_exception (env, javaThread, javaException);
 #else // def NET6
 	MonoDomain *domain = mono_domain_get ();
+
+	// This can fix the issue?
+	//mono_jit_thread_attach (domain);
+	//domain = mono_domain_get ();
+
+	log_warn (LOG_DEFAULT, "!!! Java_mono_android_Runtime_propagateUncaughtException domain = %p", domain);
 	monodroidRuntime.propagate_uncaught_exception (domain, env, javaThread, javaException);
 #endif // ndef NET6
 }
